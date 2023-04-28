@@ -16,7 +16,7 @@ def draw_board(board):
  | {board[2][0]} | {board[2][1]} | {board[2][2]} |
  -------------
     """)
-    
+
 def welcome(board):
     print('''Welcome to the "Unbeatable Noughts and Crosses" game
 The board layout is shown below:''')
@@ -51,7 +51,7 @@ Choose your square:7 8 9 : ''')
     user_position = board[user_row][user_column]
     if not user_position==' ':
         print('Please choose empty space')
-        get_player_move(board)
+        return (None, None)
     return user_row, user_column
 
 def check_for_win(board, mark):
@@ -72,31 +72,29 @@ def check_for_win(board, mark):
                 continue
         if win:
             return win
+    win = True
     for m in range(board_length) : # check for main diagonal
-        win = True
-    if board[m][m] != mark:
-        win = False
+        if board[m][m] != mark:
+            win = False
     if win:
         return win
+    win = True
     for n in range(board_length): # check for reverse diagonal
         o = board_length - n - 1
-        win = True
         if board[n][o] != mark:
             win  = False
     if win:
         return win
     return win
-           
+
 def check_for_draw(board):
-    board_empty = False
-    board_length = len(board)
-    for i in range(board_length):
-        for j in range(board_length):
-            if board[i][j] == ' ':
-                board_empty = True
-                return board_empty
-    return board_empty
-            
+    is_drawn = True
+    for row in board:
+        if ' ' in row:
+            is_drawn = False
+            return is_drawn
+    return is_drawn
+
 def choose_computer_move(board):
     empty_position = []
     board_length = len(board)
@@ -107,20 +105,40 @@ def choose_computer_move(board):
     choice = random.choice(empty_position)
     return choice[0], choice[1]
 
-def main():
+def play_game():
     board = []
+    did_player_input = False
+    is_match_running = True
     board = initialize_board(board)
     welcome(board)
-    #player_row, player_column = get_player_move(board)
-    #board[row][column] = 'X'
-    board = [['X', ' ', 'X'], ['X', 'X', ' '], ['X', 'X', 'X']]
-    #check_for_win(board, 'X')
-    print(check_for_draw(board))
-    computer_choice_row, computer_choice_column = choose_computer_move(board)
-    board[computer_choice_row][computer_choice_column] = 'O'
-    ######## need to update board after choice
-    ######## need to check users input is in matrix
-    ######## only check board after 3 user input
-    ######## row columns or 1-9
-    
-main()
+    board = [['O', ' ', ' '], ['O', 'O', ' '], [' ', ' ', ' ']]
+    while is_match_running:
+        while not did_player_input:
+            player_row, player_column = get_player_move(board)
+            if (player_row, player_column) == (None, None):
+                continue
+            else:
+                board[player_row][player_column] = 'X'
+                draw_board(board)
+                break
+        if check_for_win(board, 'X'):
+            print('Congratulation. You won')
+            draw_board(board)
+            return 1
+        if check_for_draw(board):
+            draw_board(board)
+            print('Its a draw')
+            return 0
+        computer_row, computer_column = choose_computer_move(board)
+        board[computer_row][computer_column] = 'O'
+        draw_board(board)
+        if check_for_win(board, 'O'):
+            draw_board(board)
+            print('Sorry you lost')
+            return -1
+        if check_for_draw(board):
+            draw_board(board)
+            print('Its a draw')
+            return 0
+
+print(play_game())
