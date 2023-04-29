@@ -1,6 +1,15 @@
-import random
+"""
+This program is Tic Tac Toe.
+This is a single plyer game, and the opponent is Computer.
+To win, player or computer must have their marks in,
+any row or any column or any diagonal.
+"""
 
-def initialize_board(temp_board):
+import random
+import json
+
+
+def initialise_board(temp_board):
     temp_board = [  [' ', ' ', ' '],
                     [' ', ' ', ' '],
                     [' ', ' ', ' ']]
@@ -18,16 +27,17 @@ def draw_board(board):
     """)
 
 def welcome(board):
-    print('''Welcome to the "Unbeatable Noughts and Crosses" game
+    print('''
+Welcome to the "Unbeatable Noughts and Crosses" game
 The board layout is shown below:''')
-    draw_board(board=[[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    draw_board(board)
     print('When prompted, enter the number of corresponding to the square you want.')
 
 def get_player_move(board):
     print('''
-                   1 2 3
-                   4 5 6
-Choose your square:7 8 9 : ''')
+                   00 01 02
+                   10 11 12
+Choose your square:20 21 22 : ''')
     while True:
         user_choice_row = input('Enter row: ')
         if not user_choice_row.isdigit():
@@ -35,6 +45,7 @@ Choose your square:7 8 9 : ''')
             continue
         elif not 0 <= int(user_choice_row) < 3:
             print('Invalid input. Please type a number between (0-2)')
+            continue
         else:
             while True:
                 user_choice_column = input('Enter column: ')
@@ -73,13 +84,13 @@ def check_for_win(board, mark):
         if win:
             return win
     win = True
-    for m in range(board_length) : # check for main diagonal
+    for m in range(board_length) : # check for main diagonal win
         if board[m][m] != mark:
             win = False
     if win:
         return win
     win = True
-    for n in range(board_length): # check for reverse diagonal
+    for n in range(board_length): # check for reverse diagonal win
         o = board_length - n - 1
         if board[n][o] != mark:
             win  = False
@@ -109,18 +120,16 @@ def play_game():
     board = []
     did_player_input = False
     is_match_running = True
-    board = initialize_board(board)
+    board = initialise_board(board)
     welcome(board)
-    board = [['O', ' ', ' '], ['O', 'O', ' '], [' ', ' ', ' ']]
     while is_match_running:
         while not did_player_input:
             player_row, player_column = get_player_move(board)
             if (player_row, player_column) == (None, None):
                 continue
-            else:
-                board[player_row][player_column] = 'X'
-                draw_board(board)
-                break
+            board[player_row][player_column] = 'X'
+            draw_board(board)
+            break
         if check_for_win(board, 'X'):
             print('Congratulation. You won')
             draw_board(board)
@@ -141,4 +150,55 @@ def play_game():
             print('Its a draw')
             return 0
 
-print(play_game())
+def load_scores():
+    with open('leaderboard.txt', 'r') as read_file:
+        line = read_file.read()
+    leaderboard = json.loads(line)
+    return leaderboard
+
+
+def save_score(user_score):
+    user_name = input('Enter your name: ')
+    leaderboard = load_scores()
+    all_players = leaderboard.keys()
+    if user_name in  all_players:
+        old_score = leaderboard[user_name]
+        new_score = old_score + user_score
+        leaderboard[user_name] = new_score
+    else:
+        leaderboard[user_name] = user_score
+    with open('leaderboard.txt', 'w') as write_file:
+        json.dump(leaderboard, write_file)
+
+def display_leaderboard(users):
+    for names, scores in users.items():
+        print(names, scores)
+
+def menu():
+    score = None
+    while True:
+        user_choice = input('''
+Enter one of the following optins: 
+        1 - Play the game
+        2 - Save your score in the leaderboard
+        3 - Load and display the leaderboard
+        q - End the program
+1, 2, 3, or q: ''')
+        if user_choice.lower() == 'q':
+            print('Thanks for playing ')
+            break
+        elif user_choice == '1':
+            score = play_game()
+        if score is None and user_choice == '2':
+            print('''
+Play a game first.''')
+        elif user_choice == '2':
+            save_score(score)
+            score = None
+        elif user_choice == '3':
+            leaders = load_scores()
+            display_leaderboard(leaders)
+
+if __name__ == '__main__':
+    menu()
+    
