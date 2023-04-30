@@ -5,28 +5,38 @@ To win, player or computer must have their marks in,
 any row or any column or any diagonal.
 """
 
-import random
-import json
+import random # import random for computer's choice
+import json # loads and dumps leaderboard data
 
 
-def initialise_board(temp_board):
-    temp_board = [  [' ', ' ', ' '],
-                    [' ', ' ', ' '],
-                    [' ', ' ', ' ']]
-    return temp_board
+def initialise_board(board):
+    """
+    This is initialize_board function.
+    Sets all elements to ' '.
+    Returns board.
+    """
+    board = [   [' ', ' ', ' '],
+                [' ', ' ', ' '],
+                [' ', ' ', ' ']] # sets all marks to space string ' '
+    return board
 
 def draw_board(board):
-    print(f"""
- -------------
- | {board[0][0]} | {board[0][1]} | {board[0][2]} |
- -------------
- | {board[1][0]} | {board[1][1]} | {board[1][2]} |
- -------------
- | {board[2][0]} | {board[2][1]} | {board[2][2]} |
- -------------
-    """)
+    """
+    This is draw_board function.
+    This prints out board in a 3x3 grid with dashes(-) and pipes(|).
+    """
+    print('-------------')
+    for row in board: # iterates over rows in board
+        temp = '| '
+        for mark in row: # iterates over every mark in row
+            temp += mark + ' | '
+        print(temp)
+        print('-------------')
 
 def welcome(board):
+    """
+    This is the welcome function and prints a blank board.
+    """
     print('''
 Welcome to the "Unbeatable Noughts and Crosses" game
 The board layout is shown below:''')
@@ -34,89 +44,114 @@ The board layout is shown below:''')
     print('When prompted, enter the number of corresponding to the square you want.')
 
 def get_player_move(board):
+    """
+    This is get_player_move function.
+    Prompts user to input row and column number.
+    Checks if user's choice is empty or not.
+    Returns row and column.
+    """
     print('''
                    00 01 02
                    10 11 12
 Choose your square:20 21 22 : ''')
     while True:
         user_choice_row = input('Enter row: ')
-        if not user_choice_row.isdigit():
+        if not user_choice_row.isdigit(): # handles non numbers
             print('Invalid input. Enter a number.')
             continue
-        elif not 0 <= int(user_choice_row) < 3:
+        if not 0 <= int(user_choice_row) < 3: # handles all numbers except < 0 and >= 2
             print('Invalid input. Please type a number between (0-2)')
             continue
-        else:
-            while True:
-                user_choice_column = input('Enter column: ')
-                if not user_choice_column.isdigit():
-                    print('Invalid input. Enter a number.')
-                    continue
-                elif not 0 <= int(user_choice_column) < 3:
-                    print('Invalid input. Please type a number between (0-2)')
-                else:
-                    break
+        while True:
+            user_choice_column = input('Enter column: ')
+            if not user_choice_column.isdigit(): # handles non numbers
+                print('Invalid input. Enter a number.')
+                continue
+            elif not 0 <= int(user_choice_column) < 3: # handles all numbers except < 0 and >= 2
+                print('Invalid input. Please type a number between (0-2)')
+            else:
+                break
         break
-    user_row = int(user_choice_row)
-    user_column = int(user_choice_column)
+    user_row = int(user_choice_row) # conversion to digit
+    user_column = int(user_choice_column) # conversion to digit
     user_position = board[user_row][user_column]
-    if not user_position==' ':
+    if not user_position==' ': # checks if user's choice is empty or not
         print('Please choose empty space')
         return (None, None)
     return user_row, user_column
 
 def check_for_win(board, mark):
+    """
+    This is check_for_win function.
+    Checks for rows, columns, main diagonal and reverse diagonal.
+    Returns if won or not.
+    """
     board_length = len(board)
     for i in range(board_length): # check for row win
-        win = True
+        did_win = True
         for j in range(board_length):
             if board[i][j] != mark:
-                win = False
+                did_win = False
                 continue
-        if win:
-            return win
-    for k in range(board_length): # check for column win
-        win = True
-        for l in range(board_length):
-            if board[l][k] != mark:
-                win = False
+        if did_win:
+            return did_win
+    for i in range(board_length): # check for column win
+        did_win = True
+        for j in range(board_length):
+            if board[i][j] != mark:
+                did_win = False
                 continue
-        if win:
-            return win
-    win = True
-    for m in range(board_length) : # check for main diagonal win
-        if board[m][m] != mark:
-            win = False
-    if win:
-        return win
-    win = True
-    for n in range(board_length): # check for reverse diagonal win
-        o = board_length - n - 1
-        if board[n][o] != mark:
-            win  = False
-    if win:
-        return win
-    return win
+        if did_win:
+            return did_win
+    did_win = True
+    for i in range(board_length) : # check for main diagonal win
+        if board[i][i] != mark:
+            did_win = False
+    if did_win:
+        return did_win
+    did_win = True
+    for i in range(board_length): # check for reverse diagonal win
+        j = board_length - i - 1
+        if board[i][j] != mark:
+            did_win  = False
+    if did_win:
+        return did_win
+    return did_win
 
 def check_for_draw(board):
+    """
+    This is check_for_draw function.
+    Checks for all mark and if any mark is ' '.
+    Returns is_drawn.
+    """
     is_drawn = True
-    for row in board:
-        if ' ' in row:
+    for row in board: # iterates over rows
+        if ' ' in row: # checks if mark is empty or not
             is_drawn = False
             return is_drawn
     return is_drawn
 
 def choose_computer_move(board):
+    """
+    This is choose_computer_move.
+    Randomly generate computer's move in a list of all empty spaces.
+    Return row and column.
+    """
     empty_position = []
     board_length = len(board)
-    for i in range(board_length):
+    for i in range(board_length): # makes a list of all empty position
         for j in range(board_length):
             if board[i][j] == ' ':
                 empty_position.append([i,j])
-    choice = random.choice(empty_position)
+    choice = random.choice(empty_position) # randomly chooses an empty places
     return choice[0], choice[1]
 
 def play_game():
+    """
+    This is play_game function.
+    Main game is played here.
+    Return 1 if player won, -1 if computer won, 0 if draw.
+    """
     board = []
     did_player_input = False
     is_match_running = True
@@ -140,6 +175,8 @@ def play_game():
             return 0
         computer_row, computer_column = choose_computer_move(board)
         board[computer_row][computer_column] = 'O'
+        print('''
+Computer's move is''')
         draw_board(board)
         if check_for_win(board, 'O'):
             draw_board(board)
@@ -151,14 +188,27 @@ def play_game():
             return 0
 
 def load_scores():
-    with open('leaderboard.txt', 'r') as read_file:
+    """
+    This is load_scores function.
+    Open leaderboard.txt file.
+    Use json.loads function to load dictionary.
+    """
+    with open('leaderboard.txt', 'r', encoding='utf-8') as read_file:
         line = read_file.read()
     leaderboard = json.loads(line)
     return leaderboard
 
 
 def save_score(user_score):
-    user_name = input('Enter your name: ')
+    """
+    This is save_score function.
+    Prompt user to input name.
+    Calls load_scores function to load all scores.
+    Updates dictionary.
+    Opens leaderboard.txt on write mode
+    Saves using json.dump function.
+    """
+    user_name = input('Enter your name: ').strip().lower()
     leaderboard = load_scores()
     all_players = leaderboard.keys()
     if user_name in  all_players:
@@ -167,14 +217,23 @@ def save_score(user_score):
         leaderboard[user_name] = new_score
     else:
         leaderboard[user_name] = user_score
-    with open('leaderboard.txt', 'w') as write_file:
+    with open('leaderboard.txt', 'w', encoding='utf-8') as write_file:
         json.dump(leaderboard, write_file)
 
 def display_leaderboard(users):
+    """
+    This is display_leaderboard function.
+    Diplays all players and their scores in console.
+    """
     for names, scores in users.items():
         print(names, scores)
 
 def menu():
+    """
+    This is menu function.
+    Prompts user to enter 1, 2, 3, q.
+    Calls other functions accordingly.
+    """
     score = None
     while True:
         user_choice = input('''
