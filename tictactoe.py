@@ -155,35 +155,35 @@ def play_game():
     board = []
     did_player_input = False
     is_match_running = True
-    board = initialise_board(board)
+    board = initialise_board(board) # initializes empty board with ' ' marks
     welcome(board)
     while is_match_running:
         while not did_player_input:
-            player_row, player_column = get_player_move(board)
-            if (player_row, player_column) == (None, None):
+            player_row, player_column = get_player_move(board) # call get_player_move function
+            if (player_row, player_column) == (None, None): # if player's input is not taken
                 continue
-            board[player_row][player_column] = 'X'
-            draw_board(board)
+            board[player_row][player_column] = 'X' # replace ' ' by 'X'
+            draw_board(board) # draw current state of board
             break
-        if check_for_win(board, 'X'):
+        if check_for_win(board, 'X'): # check if user won
             print('Congratulation. You won')
-            draw_board(board)
+            draw_board(board) # draw current state of board
             return 1
-        if check_for_draw(board):
-            draw_board(board)
+        if check_for_draw(board): # check if draw
+            draw_board(board) # draw current state of board
             print('Its a draw')
             return 0
         computer_row, computer_column = choose_computer_move(board)
-        board[computer_row][computer_column] = 'O'
+        board[computer_row][computer_column] = 'O' # replace ' ' by 'O'
         print('''
 Computer's move is''')
         draw_board(board)
-        if check_for_win(board, 'O'):
-            draw_board(board)
+        if check_for_win(board, 'O'): # check if computer won
             print('Sorry you lost')
+            draw_board(board) # draw current state of board
             return -1
-        if check_for_draw(board):
-            draw_board(board)
+        if check_for_draw(board): # check if draw
+            draw_board(board) # draw current state of board
             print('Its a draw')
             return 0
 
@@ -195,7 +195,7 @@ def load_scores():
     """
     with open('leaderboard.txt', 'r', encoding='utf-8') as read_file:
         line = read_file.read()
-    leaderboard = json.loads(line)
+    leaderboard = json.loads(line) # loads all names and score in leaderboard
     return leaderboard
 
 
@@ -208,24 +208,24 @@ def save_score(user_score):
     Opens leaderboard.txt on write mode
     Saves using json.dump function.
     """
-    user_name = input('Enter your name: ').strip().lower()
-    leaderboard = load_scores()
-    all_players = leaderboard.keys()
-    if user_name in  all_players:
+    user_name = input('Enter your name: ').strip().lower() # prompt user to enter name
+    leaderboard = load_scores() # call load_scores function to get dictionary with names and scores
+    all_players = leaderboard.keys() # only get user names
+    if user_name in all_players: # if user in leaderboard
         old_score = leaderboard[user_name]
-        new_score = old_score + user_score
+        new_score = old_score + user_score # update the old score
         leaderboard[user_name] = new_score
-    else:
+    else: # if user not in leaderboard
         leaderboard[user_name] = user_score
     with open('leaderboard.txt', 'w', encoding='utf-8') as write_file:
-        json.dump(leaderboard, write_file)
+        json.dump(leaderboard, write_file) # stores all names and scores
 
 def display_leaderboard(users):
     """
     This is display_leaderboard function.
     Diplays all players and their scores in console.
     """
-    for names, scores in users.items():
+    for names, scores in users.items(): # loops through all names and scores
         print(names, scores)
 
 def menu():
@@ -242,22 +242,22 @@ Enter one of the following optins:
         2 - Save your score in the leaderboard
         3 - Load and display the leaderboard
         q - End the program
-1, 2, 3, or q: ''')
+1, 2, 3, or q: ''') # prompt user to input 1, 2, 3, q
         if user_choice.lower() == 'q':
             print('Thanks for playing ')
             break
-        elif user_choice == '1':
+        elif user_choice == '1': # if user_choice is 1 start game
             score = play_game()
         if score is None and user_choice == '2':
             print('''
 Play a game first.''')
-        elif user_choice == '2':
+        elif user_choice == '2': # if user_choice is 2 save score
             save_score(score)
             score = None
-        elif user_choice == '3':
+        elif user_choice == '3': # if user_choice is 3 load score and display
             leaders = load_scores()
             display_leaderboard(leaders)
 
-if __name__ == '__main__':
+if __name__ == '__main__': # can be called only as a script not as a module
     menu()
     
