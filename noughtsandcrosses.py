@@ -200,8 +200,7 @@ Enter one of the following options:
 1, 2, 3, or q: ''') # prompt user to input 1, 2, 3, q
     if user_choice.lower() in ['1', '2', '3', 'q']:
         return user_choice.lower()
-    else:
-        print('''
+    print('''
 Please print a valid mode''')
 
 def load_scores():
