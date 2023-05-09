@@ -206,11 +206,19 @@ def load_scores():
     Open leaderboard.txt file.
     Use loads function to load dictionary.
     """
-    if not exists('leaderboard.txt'):
+    leaderboard = {}
+    if not exists('leaderboard.txt'):  # if leaderboard does not exist
         print("\nLeaderboard does not exists.\n")
+        with open('leaderboard.txt', 'w', encoding='utf-8') as new_file:
+            print('Creating new leaderboard.')
+            json.dump({}, new_file)
     with open('leaderboard.txt', 'r', encoding='utf-8') as read_file:
         line = read_file.read()
-    leaderboard = json.loads(line)  # loads all names and score in leaderboard
+    try:
+        leaderboard = json.loads(line)  # loads all names and score in leaderboard
+    except json.JSONDecodeError:  # if leaderboard does not have object
+        with open('leaderboard.txt', 'w', encoding='utf-8') as write_file:
+            json.dump({}, write_file)
     return leaderboard
 
 
