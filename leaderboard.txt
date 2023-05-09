@@ -1,1 +1,1 @@
-{"oscar": 13, "mayank": 1}
+{"oscar": 24, "mayank": 1}
