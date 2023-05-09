@@ -253,5 +253,8 @@ def display_leaderboard(leaders):
     print('''
 ======LEADERBOARD======
 ''')
-    for names, scores in leaders.items():  # loops through all names and scores
-        print(names, 'scored', scores)
+    if leaders == {}:  # empty leaderboard
+        print('No leaders yet')
+    else:
+        for names, scores in leaders.items():  # loops through all names and scores
+            print(names, 'scored', scores)
